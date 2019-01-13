@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>header test</title>
+	<script src="webgl-utils.js"></script>
+	<script src="main.js"></script>
+	<style>
+		html, body {
+			margin: 0;
+		}
+
+		canvas {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 100vh;
+			width: 100vw;
+		}
+	</style>
+	<script id="header-vertex-shader" type="x-shader/x-vertex">
+		attribute vec2 a_position;
+
+		void main() {
+			gl_Position = vec4(a_position, 0, 1);
+		}
+	</script>
+	<script id="header-fragment-shader" type="x-shader/x-fragment">
+		precision highp float;
+		#define SCALE 10.0
+		#define ITERATIONS 2
+		#define SPEED 10.0
+
+		uniform float time;
+		uniform vec2 resolution;
+
+		float aspectX = resolution.x/resolution.y;
+		float aspectY = 1.0;
+
+		void main(void) {
+			float x = (gl_FragCoord.x/resolution.x-0.5)*SCALE*aspectX;
+			float y = (gl_FragCoord.y/resolution.y-0.5)*SCALE*aspectY;
+			float m = 0.0;
+			float cx = sin(time/SPEED)-1.0;
+			float cy = cos(time/SPEED+1.0)-1.0;
+			for (int i = 0; i < ITERATIONS; i++) {
+				x = abs(x) + x * x;
+				y = abs(y) + y * y;
+				m = x*y+y*x;
+				x = x/m+cx;
+				y = y/m+cy;
+			}
+			gl_FragColor = vec4(
+				1.0-(sin(m)/2.0+.5),
+				1.0-(sin(m)/2.0+.5),
+				1.0-(sin(m)/2.0+.5),
+				1.0
+			);
+		}
+	</script>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
